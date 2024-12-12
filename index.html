@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input[type="text"], button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Marks Finder</h1>
+        <label for="rollNo">Enter Roll Number:</label>
+        <input type="text" id="rollNo" placeholder="e.g., 101">
+        <button onclick="findMarks()">Get Marks</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        // Sample student data
+        const students = [
+        { rollNo: "2100040100021", name: "DHARMENDRA SOLANKI", marks: "10" },
+            { rollNo: "2100040100027", name: "GAURAV RATHORE", marks: "Absent" },
+            { rollNo: "2100040100041", name: "MANISH DHAKED", marks: "Absent" },
+            { rollNo: "2100040100047", name: "NITANSHI VARSHNEY", marks: "27" },
+            { rollNo: "2100040100056", name: "PRANSHUL SHARMA", marks: "16" },
+            { rollNo: "2100040100060", name: "RITIK PAL", marks: "Absent" },
+            { rollNo: "2100040100064", name: "SATYAJEET NAYAK", marks: "3" },
+            { rollNo: "2100040100076", name: "SUMIT KHIRWAR", marks: "Absent" },
+            { rollNo: "2200040100001", name: "ABHAY YADAV", marks: "25.5" },
+            { rollNo: "2200040100003", name: "ABHINAY SIKARWAR", marks: "Absent" },
+            { rollNo: "2200040100004", name: "ABHIRAJ SHARMA", marks: "16" },
+            { rollNo: "2200040100005", name: "ABHISHEK MISHRA", marks: "18" },
+            { rollNo: "2200040100008", name: "ABHISHEK YADAV", marks: "Absent" },
+            { rollNo: "2200040100009", name: "ADITYA SIKARWAR", marks: "23" },
+            { rollNo: "2200040100010", name: "AKASH YADAV", marks: "21" },
+            { rollNo: "2200040100011", name: "ALOK KUMAR BARNWAL", marks: "24" },
+            { rollNo: "2200040100012", name: "AMAN KUMAR SHARMA", marks: "30" },
+            { rollNo: "2200040100013", name: "AMIT KUMAR", marks: "22" },
+            { rollNo: "2200040100014", name: "ANIKET DIWAKAR (TFW)", marks: "Absent" },
+            { rollNo: "2200040100015", name: "ANJALI ARYA", marks: "20" },
+            { rollNo: "2200040100016", name: "ANKIT SHARMA", marks: "20" },
+            { rollNo: "2200040100017", name: "ANNU GARG", marks: "21" },
+            { rollNo: "2200040100018", name: "ANUJ PAL", marks: "26" },
+            { rollNo: "2200040100019", name: "ANURAG PRAJAPATI", marks: "23" },
+            { rollNo: "2200040100020", name: "ANUSHKA TIWARI", marks: "Absent" },
+            { rollNo: "2200040100021", name: "ARYAN BAADLAS", marks: "28" },
+            { rollNo: "2200040100022", name: "ASHISH KUMAR", marks: "23" },
+            { rollNo: "2200040100023", name: "ASHISH SOLANKI", marks: "26" },
+            { rollNo: "2200040100024", name: "AYUSH JAIN", marks: "22" },
+            { rollNo: "2200040100025", name: "BHANU PRATAP SINGH", marks: "Absent" },
+            { rollNo: "2200040100026", name: "BHAWANA KUMARI", marks: "28" },
+            { rollNo: "2200040100027", name: "CHANDRAPRAKASH BAGHEL", marks: "22" },
+            { rollNo: "2200040100028", name: "CHANDRASHEKHAR", marks: "Absent" },
+            { rollNo: "2200040100029", name: "DEEKSHA SHARMA", marks: "24" },
+            { rollNo: "2200040100030", name: "DEV PRATAP SINGH", marks: "28" },
+            { rollNo: "2200040100031", name: "DHARMESH RAWAT", marks: "28" },
+            { rollNo: "2200040100032", name: "DHRUV GOYAL", marks: "17" },
+            { rollNo: "2200040100033", name: "DIVANSHU BAGHEL", marks: "13" },
+            { rollNo: "2200040100035", name: "HARSH PACHAURI", marks: "23" },
+            { rollNo: "2200040100036", name: "HARSH RATHOUR", marks: "12" },
+            { rollNo: "2200040100037", name: "HARSH SHARMA", marks: "15" },
+            { rollNo: "2200040100038", name: "HARSH SINGH", marks: "16" },
+            { rollNo: "2200040100039", name: "ISHU BAGHEL", marks: "Absent" },
+            { rollNo: "2200040100040", name: "JAYANT RANA", marks: "Absent" },
+            { rollNo: "2200040100041", name: "KANHA PATHAK", marks: "22" },
+            { rollNo: "2200040100042", name: "KAPIL SIKARWAR", marks: "22" },
+            { rollNo: "2200040100043", name: "KARAN KUMAR", marks: "15" },
+            { rollNo: "2200040100044", name: "KARTIK PRATAP SINGH", marks: "21" },
+            { rollNo: "2200040100045", name: "KARTIKEYA SHARMA", marks: "Absent" },
+            { rollNo: "2200040100046", name: "KHEM PRATAP", marks: "22" },
+            { rollNo: "2200040100047", name: "KHUSHI SHARMA", marks: "Absent" },
+            { rollNo: "2200040100048", name: "KHUSHI SHARMA", marks: "23" },
+            { rollNo: "2200040100049", name: "KRISHNA KAUSHIK", marks: "Absent" },
+            { rollNo: "2200040100050", name: "KRISHNA PRATAP SINGH CHAUHAN", marks: "28" },
+            { rollNo: "2200040100052", name: "MANASWI GAUR", marks: "Absent" },
+            { rollNo: "2200040100053", name: "MANAV CHAUDHARY", marks: "18" },
+            { rollNo: "2200040100054", name: "MANVENDRA SINGH YADAV", marks: "4" },
+            { rollNo: "2200040100055", name: "MAYANK CHAUHAN", marks: "16." },
+            { rollNo: "2200040100056", name: "MEGHA RAJPUT", marks: "23" },
+            { rollNo: "2200040100057", name: "MOHAMMAD TALIB", marks: "22" },
+  { rollNo: "2200040100058", name: "MOHIT SINGH RATHORE", marks: "20.5" },
+  { rollNo: "2200040100059", name: "NAVEEN KUMAR", marks: "19" },
+  { rollNo: "2200040100060", name: "NEELAM", marks: "20" },
+  { rollNo: "2200040100061", name: "NITESH SONI", marks: "20" },
+  { rollNo: "2200040100062", name: "NITIN TOMAR", marks: "20" },
+  { rollNo: "2200040100063", name: "PANKAJ KUMAR SARASWAT", marks: "14" },
+  { rollNo: "2200040100064", name: "PARTHIV SHARMA", marks: "27" },
+  { rollNo: "2200040100065", name: "PRACHI YADAV", marks: "13" },
+  { rollNo: "2200040100066", name: "PRASHANT KUMAR", marks: "22" },
+  { rollNo: "2200040100067", name: "PRATEEK KUMAR JHA", marks: "20.5" },
+  { rollNo: "2200040100068", name: "PRINCY SHARMA", marks: "29" },
+  { rollNo: "2200040100069", name: "PRIYA RAJPUT", marks: "20" },
+  { rollNo: "2200040100070", name: "PURUSHARTH PACHAURI", marks: "21" },
+  { rollNo: "2200040100071", name: "RAGHVI JAIN", marks: "27" },
+  { rollNo: "2200040100072", name: "RAM NARAYAN GUPTA", marks: "23" },
+  { rollNo: "2200040100073", name: "RITIK KUMAR VIMAL", marks: "16" },
+  { rollNo: "2200040100074", name: "ROHIT KUMAR", marks: "Absent" },
+  { rollNo: "2200040100075", name: "SALONI SHARMA", marks: "25" },
+  { rollNo: "2200040100076", name: "SANJU MAHOUR", marks: "23" },
+  { rollNo: "2200040100077", name: "SARANSH AGARWAL", marks: "27" },
+  { rollNo: "2200040100078", name: "SAURABH KUMAR", marks: "29.5" },
+  { rollNo: "2200040100079", name: "SAURABH SINGH", marks: "22" },
+  { rollNo: "2200040100080", name: "SAURAV", marks: "11" },
+  { rollNo: "2200040100081", name: "SHIVAM KUMAR", marks: "Absent" },
+  { rollNo: "2200040100082", name: "SHIVANI TYAGI", marks: "23" },
+  { rollNo: "2200040100083", name: "SHREYA AGARWAL (TFW)", marks: "29" },
+  { rollNo: "2200040100085", name: "SHUBHAM KUMAR", marks: "12.5" },
+  { rollNo: "2200040100086", name: "TANYA DIXIT", marks: "25" },
+  { rollNo: "2200040100087", name: "TEJASWANI SHUKLA", marks: "25.5" },
+  { rollNo: "2200040100088", name: "UDIT PRATAP SINGH", marks: "15" },
+  { rollNo: "2200040100089", name: "UMESH KUMAR", marks: "21" },
+  { rollNo: "2200040100090", name: "VIKAS VERMA", marks: "12.5" },
+  { rollNo: "2200040100091", name: "VISHAL DIXIT", marks: "18.5" },
+  { rollNo: "2200040100092", name: "VISHVAVEER SINGH", marks: "17.5" },
+  { rollNo: "2300040109001", name: "Anurag Upreti", marks: "Absent" },
+  { rollNo: "2300040109002", name: "BIRENDRA SINGH", marks: "22" },
+  { rollNo: "2300040109003", name: "Kamal Kumar", marks: "30" },
+  { rollNo: "2300040109004", name: "PRATEEK SIKARWAR", marks: "26" }
+        ];
+
+        function findMarks() 
+        {
+            const rollNoInput = document.getElementById("rollNo").value;
+            const resultDiv = document.getElementById("result");
+            
+            const student = students.find(s => s.rollNo === rollNoInput);
+            
+            if (student) {
+                resultDiv.textContent = `${student.name}: ${student.marks}`;
+            } else {
+                resultDiv.textContent = "Roll number not found.";
+            }
+        }
+    </script>
+</body>
+</html>
